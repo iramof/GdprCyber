@@ -19,11 +19,16 @@ class RegistrationHandlerTest(BaseTest):
     def test_registration(self):
         email = 'test@test.com'
         display_name = 'testDisplayName'
+        password = 'testPassword'
 
         body = {
           'email': email,
-          'password': 'testPassword',
-          'displayName': display_name
+          'password': password,
+          'displayName': display_name,
+          'disability': 'walk',
+          'address': "Test Address",
+          'birthdate': "20 March",
+          'phone': "3538740"
         }
 
         response = self.fetch('/registration', method='POST', body=dumps(body))
@@ -38,7 +43,11 @@ class RegistrationHandlerTest(BaseTest):
 
         body = {
           'email': email,
-          'password': 'testPassword'
+          'password': 'testPassword',
+          'disability': 'walk',
+          'address': "Test Address",
+          'birthdate': "20 March",
+          'phone': "3538740"
         }
 
         response = self.fetch('/registration', method='POST', body=dumps(body))
@@ -52,7 +61,11 @@ class RegistrationHandlerTest(BaseTest):
         body = {
           'email': 'test@test.com',
           'password': 'testPassword',
-          'displayName': 'testDisplayName'
+          'displayName': 'testDisplayName',
+          'disability': 'walk',
+          'address': "Test Address",
+          'birthdate': "20 March",
+          'phone': "3538740"
         }
 
         response = self.fetch('/registration', method='POST', body=dumps(body))

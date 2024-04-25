@@ -27,7 +27,12 @@ class AuthHandler(BaseHandler):
         }, {
             'email': 1,
             'displayName': 1,
-            'expiresIn': 1
+            'expiresIn': 1,
+            'encryptDisability': 1,
+            'key': 1,
+            'address': 1,
+            'birthdate': 1,
+            'phone': 1
         })
 
         if user is None:
@@ -41,7 +46,15 @@ class AuthHandler(BaseHandler):
             self.send_error(403, message='Your token has expired!')
             return
 
-        self.current_user = {
-            'email': user['email'],
-            'display_name': user['displayName']
-        }
+
+        self.current_user = {}
+        try:
+            self.current_user['disability'] = user['encryptDisability']
+            self.current_user['key'] = user['key']
+            self.current_user['address'] = user['address']    
+            self.current_user['birthdate'] = user['birthdate'] 
+            self.current_user['phone'] = user['phone']   
+        except KeyError:
+            print('...............')
+        self.current_user['email'] = user['email']
+        self.current_user['display_name'] = user['displayName']

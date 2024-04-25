@@ -1,3 +1,5 @@
+import bcrypt
+
 from json import dumps
 from tornado.escape import json_decode, utf8
 from tornado.gen import coroutine
@@ -19,17 +21,25 @@ class LoginHandlerTest(BaseTest):
 
     @coroutine
     def register(self):
-        yield self.get_app().db.users.insert_one({
-            'email': self.email,
-            'password': self.password,
-            'displayName': 'testDisplayName'
-        })
+      #Hash password
+      salt = bcrypt.gensalt() # Generate salt
+      hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), salt)  # Hash the password with salt
+      yield self.get_app().db.users.insert_one({
+          'email': self.email,
+          'password': hashed_password,
+          'salt': salt,
+          'displayName': 'testDisplayName',
+          'encryptDisability': 'walk',
+          'address': "Test Address",
+          'birthdate': "20 March",
+          'phone': "3538740"
+      })
 
     def setUp(self):
         super().setUp()
 
         self.email = 'test@test.com'
-        self.password = 'testPassword'
+        self.password = 'testPassword_000'
 
         IOLoop.current().run_sync(self.register)
 

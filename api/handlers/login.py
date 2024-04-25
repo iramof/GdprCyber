@@ -1,3 +1,4 @@
+import bcrypt
 from datetime import datetime, timedelta
 from time import mktime
 from tornado.escape import json_decode, utf8
@@ -52,16 +53,30 @@ class LoginHandler(BaseHandler):
         user = yield self.db.users.find_one({
           'email': email
         }, {
-          'password': 1
+          'password': 1,
+          'salt': 1
         })
 
+        #print("the salt value is :", user.get('salt'), "....the stored password is :", user["password"])
         if user is None:
             self.send_error(403, message='The email address and password are invalid!')
             return
 
-        if user['password'] != password:
-            self.send_error(403, message='The email address and password are invalid!')
-            return
+        # Convert the entered password to bytes
+        password_entered_bytes = password.encode('utf-8')
+
+        # Check if the stored password is bytes or string
+        if isinstance(user.get('password'), bytes):
+            if not bcrypt.checkpw(password_entered_bytes, user.get('password')):
+                self.send_error(403, message='The email address and password are invalid!')
+                return
+        else:
+            # Assuming stored password is a string
+            # Compare hashed password string with entered password
+            hashed_entered_password = bcrypt.hashpw(password_entered_bytes, user.get('salt'))  # Hash the password with salt
+            if hashed_entered_password != user.get('password').encode('utf-8'):
+                self.send_error(403, message='The email address and password are invalid!')
+                return
 
         token = yield self.generate_token(email)
 
